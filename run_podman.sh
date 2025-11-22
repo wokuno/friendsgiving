@@ -56,4 +56,4 @@ if [[ "${USE_HOST_NETWORK:-0}" == "1" ]]; then
 	NETWORK_ARGS="--network host"
 	echo "Switching to host networking so 192.168.9.187:8080 can reach the server."
 fi
-podman run --rm $NETWORK_ARGS -v "$(pwd)/menu.json":/app/menu.json friendsgiving
+podman run --rm $NETWORK_ARGS -v "$(pwd)/src/data/menu.json":/app/data/menu.json friendsgiving

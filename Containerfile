@@ -21,8 +21,8 @@ WORKDIR /app
 COPY --from=builder /app/friendsgiving-server .
 
 # Copy static files and data
-COPY index.html .
-COPY menu.json .
+COPY --from=builder /app/src/static ./static
+COPY --from=builder /app/src/data ./data
 
 # Expose the port
 EXPOSE 8080
