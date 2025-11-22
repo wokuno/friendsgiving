@@ -23,6 +23,7 @@ var (
 )
 
 func main() {
+	ensureMenuFile()
 	http.HandleFunc("/api/menu", handleMenu)
 	http.Handle("/", http.FileServer(http.Dir(".")))
 
@@ -141,4 +142,33 @@ func deleteMenuItem(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func ensureMenuFile() {
+	if _, err := os.Stat(menuFile); os.IsNotExist(err) {
+		defaultMenu := []MenuItem{
+			{
+				ID:   "1763786780838787402",
+				Dish: "Turkey",
+				Who:  "Will",
+			},
+			{
+				ID:   "1763786910210202650",
+				Dish: "Dessert",
+				Who:  "Sarah",
+			},
+		}
+
+		data, err := json.MarshalIndent(defaultMenu, "", "    ")
+		if err != nil {
+			log.Printf("Failed to marshal default menu: %v", err)
+			return
+		}
+
+		if err := os.WriteFile(menuFile, data, 0644); err != nil {
+			log.Printf("Failed to create default menu file: %v", err)
+		} else {
+			fmt.Println("Created default menu.json")
+		}
+	}
 }
