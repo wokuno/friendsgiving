@@ -242,44 +242,74 @@
     </div>
 
     <script>
-        let isEditMode = false;
+    let isEditMode = false;
+    let currentMenu = [];
+    let menuSource;
 
-        // Load menu on start
-        window.onload = function() {
-            fetchMenu();
+    window.onload = function() {
+        fetchMenu();
+        subscribeMenuStream();
+    };
+
+    function toggleEditMode() {
+        isEditMode = !isEditMode;
+        const editToggle = document.querySelector('.edit-toggle');
+        editToggle.textContent = isEditMode ? 'Done' : 'Edit Menu';
+        renderMenu(currentMenu);
+    }
+
+    function renderMenu(menu) {
+        if (!Array.isArray(menu)) {
+            return;
+        }
+        currentMenu = menu;
+        const list = document.getElementById('menuList');
+        list.innerHTML = '';
+        menu.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = `${item.dish} (${item.who})`;
+
+            if (isEditMode) {
+                const deleteBtn = document.createElement('button');
+                deleteBtn.textContent = '❌';
+                deleteBtn.className = 'delete-btn';
+                deleteBtn.onclick = () => deleteItem(item.id);
+                li.appendChild(deleteBtn);
+            }
+
+            list.appendChild(li);
+        });
+    }
+
+    function fetchMenu() {
+        fetch('/api/menu')
+            .then(response => response.json())
+            .then(data => renderMenu(data))
+            .catch(err => console.error('Error loading menu:', err));
+    }
+
+    function subscribeMenuStream() {
+        if (menuSource) {
+            menuSource.close();
+        }
+
+        menuSource = new EventSource('/api/menu/stream');
+
+        menuSource.addEventListener('menu', event => {
+            try {
+                const data = JSON.parse(event.data);
+                renderMenu(data);
+            } catch (error) {
+                console.error('Invalid menu data from stream:', error);
+            }
+        });
+
+        menuSource.onerror = () => {
+            console.error('Menu stream disconnected. Reconnecting...');
+            menuSource.close();
+            setTimeout(subscribeMenuStream, 5000);
         };
-
-        function toggleEditMode() {
-            isEditMode = !isEditMode;
-            fetchMenu(); // Re-render list
-            const editToggle = document.querySelector('.edit-toggle');
-            editToggle.textContent = isEditMode ? 'Done' : 'Edit Menu';
-        }
-
-        function fetchMenu() {
-            fetch('/api/menu')
-                .then(response => response.json())
-                .then(data => {
-                    const list = document.getElementById('menuList');
-                    list.innerHTML = '';
-                    data.forEach(item => {
-                        const li = document.createElement('li');
-                        li.textContent = `${item.dish} (${item.who})`;
-                        
-                        if (isEditMode) {
-                            const deleteBtn = document.createElement('button');
-                            deleteBtn.textContent = '❌';
-                            deleteBtn.className = 'delete-btn';
-                            deleteBtn.onclick = () => deleteItem(item.id);
-                            li.appendChild(deleteBtn);
-                        }
-                        
-                        list.appendChild(li);
-                    });
-                })
-                .catch(err => console.error('Error loading menu:', err));
-        }
-
+    }
         function deleteItem(id) {
             if (!confirm('Are you sure you want to remove this item?')) return;
 

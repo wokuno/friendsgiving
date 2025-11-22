@@ -8,10 +8,10 @@ COPY go.mod ./
 RUN go mod download
 
 # Copy source code
-COPY main.go ./
+COPY src ./src
 
 # Build the application
-RUN go build -o friendsgiving-server main.go
+RUN go build -o friendsgiving-server ./src
 
 # Run stage
 FROM alpine:latest

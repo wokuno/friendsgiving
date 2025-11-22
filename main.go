@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 )
@@ -18,13 +19,17 @@ type MenuItem struct {
 }
 
 var (
-	menuFile = "menu.json"
-	mu       sync.Mutex
+	menuFile     = "menu.json"
+	mu           sync.Mutex
+	clients      = make(map[int]chan []byte)
+	clientsMu    sync.Mutex
+	nextClientID int
 )
 
 func main() {
 	ensureMenuFile()
 	http.HandleFunc("/api/menu", handleMenu)
+	http.HandleFunc("/api/menu/stream", streamMenu)
 	http.Handle("/", http.FileServer(http.Dir(".")))
 
 	fmt.Println("Server starting on http://localhost:8080")
@@ -61,6 +66,78 @@ func getMenu(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(data)
+}
+
+func streamMenu(w http.ResponseWriter, r *http.Request) {
+	flusher, ok := w.(http.Flusher)
+	if !ok {
+		http.Error(w, "Streaming unsupported", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "text/event-stream")
+	w.Header().Set("Cache-Control", "no-cache")
+	w.Header().Set("Connection", "keep-alive")
+	if origin := r.Header.Get("Origin"); origin != "" {
+		w.Header().Set("Access-Control-Allow-Origin", origin)
+	}
+
+	ch := make(chan []byte, 5)
+	clientID := addClient(ch)
+	defer removeClient(clientID)
+
+	// Send current menu immediately
+	if data, err := os.ReadFile(menuFile); err == nil {
+		sendSSE(w, flusher, data)
+	} else {
+		sendSSE(w, flusher, []byte("[]"))
+	}
+
+	for {
+		select {
+		case data := <-ch:
+			sendSSE(w, flusher, data)
+		case <-r.Context().Done():
+			return
+		}
+	}
+}
+
+func sendSSE(w http.ResponseWriter, flusher http.Flusher, data []byte) {
+	fmt.Fprintf(w, "event: menu\n")
+	for _, line := range strings.Split(string(data), "\n") {
+		fmt.Fprintf(w, "data: %s\n", line)
+	}
+	fmt.Fprint(w, "\n")
+	flusher.Flush()
+}
+
+func addClient(ch chan []byte) int {
+	clientsMu.Lock()
+	defer clientsMu.Unlock()
+	nextClientID++
+	clients[nextClientID] = ch
+	return nextClientID
+}
+
+func removeClient(id int) {
+	clientsMu.Lock()
+	defer clientsMu.Unlock()
+	if ch, ok := clients[id]; ok {
+		close(ch)
+		delete(clients, id)
+	}
+}
+
+func broadcastMenuUpdate(data []byte) {
+	clientsMu.Lock()
+	defer clientsMu.Unlock()
+	for _, ch := range clients {
+		select {
+		case ch <- data:
+		default:
+		}
+	}
 }
 
 func addMenuItem(w http.ResponseWriter, r *http.Request) {
@@ -102,6 +179,8 @@ func addMenuItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	broadcastMenuUpdate(updatedData)
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	w.Write(updatedData)
@@ -140,6 +219,8 @@ func deleteMenuItem(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to save menu", http.StatusInternalServerError)
 		return
 	}
+
+	broadcastMenuUpdate(updatedData)
 
 	w.WriteHeader(http.StatusOK)
 }
