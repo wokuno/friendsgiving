@@ -11,6 +11,7 @@ show_help() {
     echo "Options:"
     echo "  --build       Build the container image"
     echo "  --host        Use host networking"
+    echo "  -d, --detach  Run the container in detached mode"
     echo "  -h, --help    Show this help message"
 }
 
@@ -23,6 +24,10 @@ for arg in "$@"; do
         ;;
         --host)
         USE_HOST_NETWORK=1
+        shift
+        ;;
+        -d|--detach)
+        DETACH_MODE=1
         shift
         ;;
         -h|--help)
@@ -56,4 +61,11 @@ if [[ "${USE_HOST_NETWORK:-0}" == "1" ]]; then
 	NETWORK_ARGS="--network host"
 	echo "Switching to host networking so 192.168.9.187:8080 can reach the server."
 fi
-podman run --rm $NETWORK_ARGS -v "$(pwd)/src/data/menu.json":/app/data/menu.json friendsgiving
+
+DETACH_ARG=""
+if [[ "${DETACH_MODE:-0}" == "1" ]]; then
+    DETACH_ARG="-d"
+    echo "Running container in detached mode."
+fi
+
+podman run $DETACH_ARG --rm $NETWORK_ARGS -v "$(pwd)/src/data/menu.json":/app/data/menu.json friendsgiving
