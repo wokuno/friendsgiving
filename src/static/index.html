@@ -3,11 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Alan+Sans:wght@300..900&display=swap" rel="stylesheet">
     <title>Friendsgiving Invitation</title>
     <style>
         body {
-            font-family: 'Georgia', serif;
-            background-color: #fdf6e3;
+            font-family: 'Alan Sans', 'Comic Sans MS', 'Comic Sans', 'Marker Felt', cursive;
+            font-optical-sizing: auto;
+            background: radial-gradient(circle at top, #ffe4b3 0, #fff7e6 35%, #ffe6f2 70%, #e6f7ff 100%);
             color: #5d4037;
             display: flex;
             justify-content: center;
@@ -17,16 +21,18 @@
             padding: 20px;
         }
         .invite-card {
-            background-color: #fff;
-            border: 1px solid #e0e0e0;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            background: repeating-linear-gradient(-45deg, #fffdf5, #fffdf5 8px, #fff3e0 8px, #fff3e0 16px);
+            border: 4px solid #ffb74d;
+            border-radius: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.18);
             max-width: 600px;
             width: 100%;
             padding: 40px;
             text-align: center;
             position: relative;
             overflow: hidden;
+            transform: rotate(-1deg);
+            animation: floaty 4s ease-in-out infinite alternate;
         }
         .invite-card::before {
             content: "";
@@ -34,99 +40,143 @@
             top: 0;
             left: 0;
             right: 0;
-            height: 10px;
-            background: linear-gradient(to right, #d84315, #ffab91, #ffccbc, #d84315);
+            height: 14px;
+            background: repeating-linear-gradient(45deg, #ff7043 0, #ff7043 12px, #ffd54f 12px, #ffd54f 24px, #81d4fa 24px, #81d4fa 36px);
+        }
+        .invite-card::after {
+            content: "";
+            position: absolute;
+            bottom: -40px;
+            right: -40px;
+            width: 140px;
+            height: 140px;
+            background: radial-gradient(circle, rgba(255,255,255,0.9) 0, rgba(255,255,255,0) 70%);
+            opacity: 0.7;
         }
         h1 {
-            font-size: 3em;
+            font-size: 3.2em;
             margin-bottom: 10px;
-            color: #d84315;
-            font-weight: normal;
+            color: #ff7043;
+            font-weight: 900;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 3px 3px 0 #ffe082, 6px 6px 0 rgba(0,0,0,0.12);
         }
         h2 {
             font-size: 1.5em;
             margin-top: 0;
-            color: #8d6e63;
-            font-weight: 300;
+            color: #6d4c41;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 4px;
+            background-color: #fff8e1;
+            display: inline-block;
+            padding: 6px 14px;
+            border-radius: 999px;
+            border: 2px dotted #ffb74d;
+            transform: rotate(1.5deg);
         }
         .divider {
             margin: 30px auto;
-            width: 100px;
-            height: 2px;
-            background-color: #d84315;
+            width: 120px;
+            height: 6px;
+            border-radius: 999px;
+            background: linear-gradient(to right, #ff7043, #ffca28, #66bb6a, #29b6f6, #ab47bc);
+            box-shadow: 0 0 0 4px #fff8e1;
         }
         .details {
-            font-size: 1.2em;
-            line-height: 1.6;
+            font-size: 1.1em;
+            line-height: 1.7;
             margin-bottom: 30px;
         }
         .date-highlight {
             font-weight: bold;
-            font-size: 1.4em;
-            color: #bf360c;
-            display: block;
+            font-size: 1.5em;
+            color: #d32f2f;
+            display: inline-block;
             margin: 15px 0;
+            padding: 6px 14px;
+            border-radius: 999px;
+            background-color: #ffebee;
+            box-shadow: 0 0 0 3px #ffcdd2;
         }
         .rsvp-btn {
             display: inline-block;
-            background-color: #d84315;
-            color: white;
+            background-color: #ffca28;
+            color: #4e342e;
             padding: 12px 30px;
             text-decoration: none;
             border-radius: 25px;
             font-weight: bold;
-            transition: background-color 0.3s ease;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
             margin-top: 20px;
+            box-shadow: 0 4px 0 #f9a825;
+            border: 2px solid #f57c00;
         }
         .rsvp-btn:hover {
-            background-color: #bf360c;
+            background-color: #ffe082;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #f9a825;
         }
         .calendar-btn {
             display: inline-block;
-            background-color: #fff;
-            color: #d84315;
-            border: 2px solid #d84315;
+            background-color: #29b6f6;
+            color: #fff;
+            border: 3px solid #0288d1;
             padding: 10px 28px;
             text-decoration: none;
             border-radius: 25px;
             font-weight: bold;
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 0 #0288d1;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
             margin-top: 15px;
             cursor: pointer;
             font-family: inherit;
             font-size: 1em;
         }
         .calendar-btn:hover {
-            background-color: #d84315;
-            color: white;
+            background-color: #4fc3f7;
+            transform: translateY(-2px) rotate(-1deg);
+            box-shadow: 0 6px 0 #0288d1;
         }
         .footer {
             margin-top: 40px;
             font-size: 0.9em;
-            color: #8d6e63;
+            color: #795548;
             font-style: italic;
+            background-color: #fff8e1;
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: 1px dashed #ffb74d;
+            transform: rotate(-1.5deg);
         }
         .decoration {
-            font-size: 2em;
-            margin: 10px 0;
+            font-size: 2.6em;
+            margin: 10px 0 2px;
+            animation: wiggle 1.8s ease-in-out infinite;
         }
         .menu-section {
-            background-color: #fff3e0;
+            background-color: #fffde7;
             padding: 20px;
             border-radius: 10px;
             margin: 25px 0;
-            border: 1px dashed #d84315;
+            border: 3px dashed #ffb74d;
+            box-shadow: 0 6px 0 #ffe082;
         }
         .menu-title {
             font-weight: bold;
-            color: #d84315;
+            color: #ff7043;
             margin-bottom: 15px;
             display: block;
             text-transform: uppercase;
             font-size: 0.9em;
             letter-spacing: 1px;
+            background-color: #fff3e0;
+            padding: 4px 10px;
+            border-radius: 999px;
+            display: inline-block;
+            transform: rotate(-2deg);
         }
         .menu-items {
             list-style: none;
@@ -140,7 +190,19 @@
         }
         .menu-items li {
             margin: 5px 0;
+            padding: 6px 10px;
+            border-radius: 12px;
+            background-color: #ffe0b2;
+            box-shadow: 0 3px 0 #ffcc80;
+            position: relative;
         }
+        /* .menu-items li::before {
+            content: '⭐';
+            position: absolute;
+            left: -14px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-12deg);
+        } */
         .add-item-form {
             margin-top: 20px;
             display: flex;
@@ -150,31 +212,39 @@
         }
         .form-input {
             padding: 8px 12px;
-            border: 1px solid #d84315;
-            border-radius: 5px;
+            border: 2px solid #ffb74d;
+            border-radius: 18px;
             width: 80%;
             max-width: 300px;
             font-family: inherit;
+            background-color: #fffdf5;
+            box-shadow: inset 0 2px 0 rgba(0,0,0,0.05);
         }
         .add-btn {
-            background-color: #8d6e63;
-            color: white;
-            border: none;
+            background-color: #66bb6a;
+            color: #1b5e20;
+            border: 2px solid #2e7d32;
             padding: 8px 20px;
             border-radius: 20px;
             cursor: pointer;
             font-family: inherit;
             font-weight: bold;
-            transition: background-color 0.3s;
+            transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+            box-shadow: 0 4px 0 #2e7d32;
         }
         .add-btn:hover {
-            background-color: #6d4c41;
+            background-color: #81c784;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0 #2e7d32;
         }
         .potluck-note {
             font-size: 0.95em;
             margin-top: 15px;
             font-style: italic;
-            color: #6d4c41;
+            color: #5d4037;
+            background-color: #fff3e0;
+            padding: 6px 10px;
+            border-radius: 10px;
         }
         .delete-btn {
             background: none;
@@ -189,17 +259,66 @@
         }
         .edit-toggle {
             font-size: 0.8em;
-            color: #d84315;
-            text-decoration: underline;
+            color: #ff7043;
+            text-decoration: none;
             cursor: pointer;
             margin-top: 10px;
             display: inline-block;
+            background-color: #fff3e0;
+            padding: 4px 10px;
+            border-radius: 999px;
+            border: 1px dashed #ffb74d;
+        }
+        .edit-toggle:hover {
+            background-color: #ffe0b2;
+        }
+
+        .confetti-row {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120%;
+            text-align: center;
+            font-size: 1.4em;
+            pointer-events: none;
+        }
+        .confetti-row span {
+            display: inline-block;
+            margin: 0 2px;
+            animation: fall 3.5s linear infinite;
+        }
+        .confetti-row span:nth-child(odd) {
+            animation-delay: 0.6s;
+        }
+        .confetti-row span:nth-child(even) {
+            animation-delay: 1.2s;
+        }
+
+        @keyframes wiggle {
+            0% { transform: rotate(-4deg) translateY(0); }
+            50% { transform: rotate(4deg) translateY(-3px); }
+            100% { transform: rotate(-4deg) translateY(0); }
+        }
+
+        @keyframes floaty {
+            0% { transform: translateY(0) rotate(-1deg); }
+            100% { transform: translateY(-6px) rotate(1deg); }
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-10px) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(40px) rotate(360deg); opacity: 0; }
         }
     </style>
 </head>
 <body>
 
     <div class="invite-card">
+        <div class="confetti-row">
+            <span>🎈</span><span>🎉</span><span>🌽</span><span>🦃</span><span>🥧</span><span>🍂</span><span>✨</span>
+        </div>
         <div class="decoration">🍂 🦃 🥧</div>
         <h1>Friendsgiving</h1>
         <h2>You're Invited!</h2>
@@ -233,8 +352,9 @@
         </div>
 
         <!-- <a href="#" class="rsvp-btn">RSVP Now</a> -->
-        <!-- <br> -->
+        <br>
         <button onclick="downloadICS()" class="calendar-btn">Add to Calendar 📅</button>
+        <br>
 
         <div class="footer">
             Please let us know if you have any dietary restrictions.

@@ -105,7 +105,6 @@ func TestHandleAddMenuItemValidation(t *testing.T) {
 			t.Fatalf("expected 400, got %d", rr.Code)
 		}
 	})
-
 	t.Run("missing fields", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPost, "/api/menu", strings.NewReader("{}"))
 		req.Header.Set("Content-Type", "application/json")
@@ -131,6 +130,55 @@ func TestHandleDeleteMenuItemValidation(t *testing.T) {
 	}
 }
 
+func TestMultiUserMenuUpdates(t *testing.T) {
+	initial := []app.MenuItem{{ID: "1", Dish: "Stuffing", Who: "Pat"}}
+	initialData, _ := json.Marshal(initial)
+	menuPath := setupTestMenuFile(t, initialData)
+	server := app.New(menuPath)
+
+	updates1, cleanup1 := server.ObserveMenuUpdates()
+	defer cleanup1()
+	updates2, cleanup2 := server.ObserveMenuUpdates()
+	defer cleanup2()
+
+	req := httptest.NewRequest(http.MethodPost, "/api/menu", strings.NewReader("{\"dish\":\"Cornbread\",\"who\":\"Jess\"}"))
+	req.Header.Set("Content-Type", "application/json")
+	rr := httptest.NewRecorder()
+	server.HandleMenu(rr, req)
+
+	if rr.Code != http.StatusCreated {
+		t.Fatalf("expected 201, got %d", rr.Code)
+	}
+
+	received1 := false
+	received2 := false
+	timeout := time.After(100 * time.Millisecond)
+
+	for !(received1 && received2) {
+		select {
+		case data := <-updates1:
+			var menu []app.MenuItem
+			if err := json.Unmarshal(data, &menu); err != nil {
+				t.Fatalf("client1 failed to decode broadcast data: %v", err)
+			}
+			if len(menu) != 2 {
+				t.Fatalf("client1 expected 2 menu items, got %#v", menu)
+			}
+			received1 = true
+		case data := <-updates2:
+			var menu []app.MenuItem
+			if err := json.Unmarshal(data, &menu); err != nil {
+				t.Fatalf("client2 failed to decode broadcast data: %v", err)
+			}
+			if len(menu) != 2 {
+				t.Fatalf("client2 expected 2 menu items, got %#v", menu)
+			}
+			received2 = true
+		case <-timeout:
+			t.Fatalf("did not receive broadcast update on all clients")
+		}
+	}
+}
 func TestAddMenuItemBroadcasts(t *testing.T) {
 	menuPath := setupTestMenuFile(t, []byte("[]"))
 	server := app.New(menuPath)
