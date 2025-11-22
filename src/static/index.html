@@ -12,11 +12,11 @@
             font-family: 'Alan Sans', 'Comic Sans MS', 'Comic Sans', 'Marker Felt', cursive;
             font-optical-sizing: auto;
             background-color: #b34b1a;
-            background-image:
+            /* background-image:
                 repeating-linear-gradient(0deg, rgba(255,255,255,0.08) 0 3px, transparent 3px 24px),
                 repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0 3px, transparent 3px 24px),
                 radial-gradient(circle at 15% 20%, rgba(255,255,255,0.08) 0, rgba(255,255,255,0) 45%),
-                radial-gradient(circle at 80% 60%, rgba(255,255,255,0.05) 0, rgba(255,255,255,0) 60%);
+                radial-gradient(circle at 80% 60%, rgba(255,255,255,0.05) 0, rgba(255,255,255,0) 60%); */
             background-size: 260px 260px, 260px 260px, 220px 220px, 200px 200px;
             color: #4e342e;
             display: flex;
@@ -25,6 +25,7 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
+            position: relative;
         }
         .invite-card {
             background: linear-gradient(145deg, #fff3e0, #ffe0b2 60%, #ffd180 100%);
@@ -37,7 +38,27 @@
             text-align: center;
             position: relative;
             overflow: hidden;
-            animation: floaty 4s ease-in-out infinite alternate;
+            z-index: 1;
+            /* animation: floaty 4s ease-in-out infinite alternate; */
+        }
+        #pumpkinBackground {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        #pumpkinBackground .pumpkin-ghost {
+            position: absolute;
+            filter: invert(1) grayscale(1) brightness(1.2);
+            mix-blend-mode: screen;
+            animation-name: floaty;
+            animation-duration: 14s;
+            animation-direction: alternate;
+            animation-iteration-count: infinite;
+            animation-timing-function: ease-in-out;
+            transform-origin: center;
+            will-change: transform;
         }
         .invite-card::before {
             content: "";
@@ -362,9 +383,12 @@
             10% { opacity: 1; }
             100% { transform: translateY(40px) rotate(360deg); opacity: 0; }
         }
+
     </style>
 </head>
 <body>
+
+    <div id="pumpkinBackground" aria-hidden="true"></div>
 
     <div class="invite-card">
         <!-- <div class="confetti-row" id="confettiRow" aria-hidden="true"></div> -->
@@ -416,6 +440,7 @@
     let currentMenu = [];
     let menuSource;
     let confettiRefreshTimer;
+    let pumpkinResizeTimer;
 
     const randomBetween = (a, b) => Math.random() * (b - a) + a;
     const confettiEmojis = ['🎈','🎉','🌽','🦃','🥧','🍂','✨','🍁','🥂','🍷','🍇','🍊','🍓','🍯','🍞','🍎','🍐','🥕','🥜','🥗','🍹','🍺','🍪','🍫','🍭'];
@@ -430,6 +455,31 @@
         opacityVariance: 0.35,
         refreshInterval: 2500,
     };
+    const backgroundPumpkinCountRange = { min: 512, max: 512 };
+
+    function addBackgroundPumpkins() {
+        const container = document.getElementById('pumpkinBackground');
+        if (!container) {
+            return;
+        }
+        container.innerHTML = '';
+        const targetCount = Math.floor(randomBetween(backgroundPumpkinCountRange.min, backgroundPumpkinCountRange.max));
+        for (let i = 0; i < targetCount; i++) {
+            const pumpkin = document.createElement('img');
+            pumpkin.src = './pumpkin.svg';
+            pumpkin.alt = '';
+            pumpkin.className = 'pumpkin-ghost';
+            const size = randomBetween(60, 180);
+            pumpkin.style.width = `${size.toFixed(2)}px`;
+            pumpkin.style.top = `${randomBetween(-25, 90).toFixed(2)}%`;
+            pumpkin.style.left = `${randomBetween(-20, 105).toFixed(2)}%`;
+            pumpkin.style.opacity = `${randomBetween(0.15, 0.4).toFixed(2)}`;
+            pumpkin.style.animationDuration = `${randomBetween(14, 45).toFixed(1)}s`;
+            pumpkin.style.animationDelay = `${randomBetween(0, 12).toFixed(1)}s`;
+            pumpkin.style.setProperty('--tilt', `${randomBetween(-12, 12).toFixed(1)}deg`);
+            container.appendChild(pumpkin);
+        }
+    }
 
     function applyRandomTilts() {
         document.querySelectorAll('[data-tilt-range]').forEach(el => {
@@ -506,11 +556,17 @@
     }
 
     window.onload = function() {
+        addBackgroundPumpkins();
         applyRandomTilts();
         generateConfetti();
         fetchMenu();
         subscribeMenuStream();
     };
+
+    window.addEventListener('resize', () => {
+        clearTimeout(pumpkinResizeTimer);
+        pumpkinResizeTimer = setTimeout(() => addBackgroundPumpkins(), 240);
+    });
 
     function toggleEditMode() {
         isEditMode = !isEditMode;
