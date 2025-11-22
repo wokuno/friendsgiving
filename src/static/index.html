@@ -139,8 +139,8 @@
             box-shadow: 0 6px 0 #0288d1;
         }
         .footer {
-            margin-top: 40px;
-            font-size: 0.9em;
+            margin-top: 10px;
+            font-size: 0.8em;
             color: #795548;
             font-style: italic;
             background-color: #fff8e1;
@@ -363,19 +363,18 @@
         <div class="decoration">🍂 🦃 🥧</div>
         <h1>Friendsgiving</h1>
         <h2 class="tiltable" data-tilt-range="-4,6">You're Invited!</h2>
-        
+
+        <br>
+
+        <span class="date-highlight">December 6</span>
+        <p><strong>Location:</strong> 3146 NE Cleveland ST, Minneapolis MN 55418<br>
+        <strong>Time:</strong> 5:00 PM - 11:00 PM</p>
+        <button onclick="downloadICS()" class="calendar-btn">Add to Calendar 📅</button>
+    
         <div class="divider"></div>
         
         <div class="details">
             <p>Let's gather for good food, great company, and plenty of gratitude.</p>
-
-            <span class="date-highlight">December 6</span>
-            <p><strong>Location:</strong> 3146 NE Cleveland ST, Minneapolis MN 55418<br>
-            <strong>Time:</strong> 5:00 PM - 11:00 PM</p>
-
-            <br>
-            <button onclick="downloadICS()" class="calendar-btn">Add to Calendar 📅</button>
-            <br>
 
             <div class="menu-section">
                 <span class="menu-title tiltable" data-tilt-range="-6,4">On the Menu</span>
@@ -392,15 +391,14 @@
                 </div>
 
                 <span onclick="toggleEditMode()" class="edit-toggle">Edit Menu</span>
-
+                <br>
+                <!-- <div class="footer tiltable" data-tilt-range="-3,4">
+                    <p>Please let us know if you have any dietary restrictions.</p>
+                </div> -->
             </div>
         </div>
-
-        <!-- <a href="#" class="rsvp-btn">RSVP Now</a> -->
-        <br>
-
-    <div class="footer tiltable" data-tilt-range="-4,3">
-            Please let us know if you have any dietary restrictions.
+        <div class="footer tiltable" data-tilt-range="-4,3">
+            <p>To RSVP, either add your dish to the menu and/or let us know if you can make it!</p>
         </div>
     </div>
 
