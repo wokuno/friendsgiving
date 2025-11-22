@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Friendsgiving Invitation</title>
+    <style>
+        body {
+            font-family: 'Georgia', serif;
+            background-color: #fdf6e3;
+            color: #5d4037;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .invite-card {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .invite-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: linear-gradient(to right, #d84315, #ffab91, #ffccbc, #d84315);
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            color: #d84315;
+            font-weight: normal;
+        }
+        h2 {
+            font-size: 1.5em;
+            margin-top: 0;
+            color: #8d6e63;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        .divider {
+            margin: 30px auto;
+            width: 100px;
+            height: 2px;
+            background-color: #d84315;
+        }
+        .details {
+            font-size: 1.2em;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .date-highlight {
+            font-weight: bold;
+            font-size: 1.4em;
+            color: #bf360c;
+            display: block;
+            margin: 15px 0;
+        }
+        .rsvp-btn {
+            display: inline-block;
+            background-color: #d84315;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+        .rsvp-btn:hover {
+            background-color: #bf360c;
+        }
+        .calendar-btn {
+            display: inline-block;
+            background-color: #fff;
+            color: #d84315;
+            border: 2px solid #d84315;
+            padding: 10px 28px;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 1em;
+        }
+        .calendar-btn:hover {
+            background-color: #d84315;
+            color: white;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 0.9em;
+            color: #8d6e63;
+            font-style: italic;
+        }
+        .decoration {
+            font-size: 2em;
+            margin: 10px 0;
+        }
+        .menu-section {
+            background-color: #fff3e0;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 25px 0;
+            border: 1px dashed #d84315;
+        }
+        .menu-title {
+            font-weight: bold;
+            color: #d84315;
+            margin-bottom: 15px;
+            display: block;
+            text-transform: uppercase;
+            font-size: 0.9em;
+            letter-spacing: 1px;
+        }
+        .menu-items {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            font-size: 1.1em;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .menu-items li {
+            margin: 5px 0;
+        }
+        .add-item-form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            align-items: center;
+        }
+        .form-input {
+            padding: 8px 12px;
+            border: 1px solid #d84315;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 300px;
+            font-family: inherit;
+        }
+        .add-btn {
+            background-color: #8d6e63;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .add-btn:hover {
+            background-color: #6d4c41;
+        }
+        .potluck-note {
+            font-size: 0.95em;
+            margin-top: 15px;
+            font-style: italic;
+            color: #6d4c41;
+        }
+        .delete-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-left: 10px;
+            opacity: 0.7;
+        }
+        .delete-btn:hover {
+            opacity: 1;
+        }
+        .edit-toggle {
+            font-size: 0.8em;
+            color: #d84315;
+            text-decoration: underline;
+            cursor: pointer;
+            margin-top: 10px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="invite-card">
+        <div class="decoration">🍂 🦃 🥧</div>
+        <h1>Friendsgiving</h1>
+        <h2>You're Invited!</h2>
+        
+        <div class="divider"></div>
+        
+        <div class="details">
+            <p>Let's gather for good food, great company, and plenty of gratitude.</p>
+
+            <span class="date-highlight">December 6</span>
+            <p><strong>Location:</strong> 3146 NE Cleveland ST, Minneapolis MN 55418<br>
+            <strong>Time:</strong> 5:00 PM - 11:00 PM</p>
+
+            <div class="menu-section">
+                <span class="menu-title">On the Menu</span>
+                <ul class="menu-items" id="menuList">
+                    <!-- Items will be loaded here -->
+                </ul>
+
+                <p class="potluck-note">We'll provide the main course and sweets.<br>Please bring an appetizer or drink to share!</p>
+                
+                <div class="add-item-form">
+                    <input type="text" id="dishInput" class="form-input" placeholder="What are you bringing? (e.g. Mashed Potatoes)">
+                    <input type="text" id="whoInput" class="form-input" placeholder="Your Name">
+                    <button onclick="addToMenu()" class="add-btn">I'll bring this!</button>
+                </div>
+
+                <span onclick="toggleEditMode()" class="edit-toggle">Edit Menu</span>
+
+            </div>
+        </div>
+
+        <a href="#" class="rsvp-btn">RSVP Now</a>
+        <br>
+        <button onclick="downloadICS()" class="calendar-btn">Add to Calendar 📅</button>
+
+        <div class="footer">
+            Please let us know if you have any dietary restrictions.
+        </div>
+    </div>
+
+    <script>
+        let isEditMode = false;
+
+        // Load menu on start
+        window.onload = function() {
+            fetchMenu();
+        };
+
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            fetchMenu(); // Re-render list
+            const editToggle = document.querySelector('.edit-toggle');
+            editToggle.textContent = isEditMode ? 'Done' : 'Edit Menu';
+        }
+
+        function fetchMenu() {
+            fetch('/api/menu')
+                .then(response => response.json())
+                .then(data => {
+                    const list = document.getElementById('menuList');
+                    list.innerHTML = '';
+                    data.forEach(item => {
+                        const li = document.createElement('li');
+                        li.textContent = `${item.dish} (${item.who})`;
+                        
+                        if (isEditMode) {
+                            const deleteBtn = document.createElement('button');
+                            deleteBtn.textContent = '❌';
+                            deleteBtn.className = 'delete-btn';
+                            deleteBtn.onclick = () => deleteItem(item.id);
+                            li.appendChild(deleteBtn);
+                        }
+                        
+                        list.appendChild(li);
+                    });
+                })
+                .catch(err => console.error('Error loading menu:', err));
+        }
+
+        function deleteItem(id) {
+            if (!confirm('Are you sure you want to remove this item?')) return;
+
+            fetch(`/api/menu?id=${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    fetchMenu();
+                } else {
+                    alert('Failed to delete item');
+                }
+            })
+            .catch(err => console.error('Error deleting item:', err));
+        }
+
+        function addToMenu() {
+            const dish = document.getElementById('dishInput').value;
+            const who = document.getElementById('whoInput').value;
+
+            if (!dish || !who) {
+                alert('Please fill in both fields!');
+                return;
+            }
+
+            fetch('/api/menu', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ dish: dish, who: who }),
+            })
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('dishInput').value = '';
+                    document.getElementById('whoInput').value = '';
+                    fetchMenu(); // Reload list
+                } else {
+                    alert('Failed to add item');
+                }
+            })
+            .catch(err => console.error('Error adding item:', err));
+        }
+
+        function downloadICS() {
+            // Event details - You can customize these
+            const event = {
+                title: 'Friendsgiving 🍂',
+                description: "Let's gather for good food, great company, and plenty of gratitude. Bring your favorite dish!",
+                location: '3146 NE Cleveland ST, Minneapolis MN 55418',
+                // Format: YYYYMMDDTHHmmSS
+                // Setting for Saturday, Dec 6, 2025 at 5:00 PM to 11:00 PM
+                startTime: '20251206T170000', 
+                endTime: '20251206T230000'
+            };
+        
+            const icsContent = [
+                'BEGIN:VCALENDAR',
+                'VERSION:2.0',
+                'PRODID:-//Friendsgiving//Invite//EN',
+                'CALSCALE:GREGORIAN',
+                'METHOD:PUBLISH',
+                'BEGIN:VEVENT',
+                `DTSTART:${event.startTime}`,
+                `DTEND:${event.endTime}`,
+                `SUMMARY:${event.title}`,
+                `DESCRIPTION:${event.description}`,
+                `LOCATION:${event.location}`,
+                `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').split('.')[0]}Z`,
+                `UID:${Date.now()}@friendsgiving.com`,
+                'END:VEVENT',
+                'END:VCALENDAR'
+            ].join('\r\n');
+        
+            const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.setAttribute('download', 'friendsgiving.ics');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
