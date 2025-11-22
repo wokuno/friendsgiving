@@ -31,7 +31,6 @@
             text-align: center;
             position: relative;
             overflow: hidden;
-            transform: rotate(-1deg);
             animation: floaty 4s ease-in-out infinite alternate;
         }
         .invite-card::before {
@@ -74,7 +73,7 @@
             padding: 6px 14px;
             border-radius: 999px;
             border: 2px dotted #ffb74d;
-            transform: rotate(1.5deg);
+            transform: rotate(var(--tilt, 0deg));
         }
         .divider {
             margin: 30px auto;
@@ -149,7 +148,7 @@
             padding: 8px 16px;
             border-radius: 999px;
             border: 1px dashed #ffb74d;
-            transform: rotate(-1.5deg);
+            transform: rotate(var(--tilt, 0deg));
         }
         .decoration {
             font-size: 2.6em;
@@ -176,7 +175,7 @@
             padding: 4px 10px;
             border-radius: 999px;
             display: inline-block;
-            transform: rotate(-2deg);
+            transform: rotate(var(--tilt, 0deg));
         }
         .menu-items {
             list-style: none;
@@ -273,6 +272,11 @@
             background-color: #ffe0b2;
         }
 
+        .tiltable {
+            --tilt: 0deg;
+            transition: transform 0.35s ease;
+        }
+
         .confetti-row {
             position: absolute;
             top: -10px;
@@ -335,13 +339,13 @@
         }
 
         @keyframes floaty {
-            0% { transform: translateY(0) rotate(-1deg); }
-            100% { transform: translateY(-6px) rotate(1deg); }
+            0% { transform: translateY(0) rotate(var(--tilt, 0deg)); }
+            100% { transform: translateY(-6px) rotate(calc(var(--tilt, 0deg) + 1deg)); }
         }
 
         @keyframes floaty-mobile {
-            0% { transform: translateY(0) rotate(0deg); }
-            100% { transform: translateY(-6px) rotate(0deg); }
+            0% { transform: translateY(0) rotate(var(--tilt, 0deg)); }
+            100% { transform: translateY(-6px) rotate(calc(var(--tilt, 0deg) + 0.5deg)); }
         }
 
         @keyframes fall {
@@ -353,13 +357,12 @@
 </head>
 <body>
 
-    <div class="invite-card">
-        <div class="confetti-row">
-            <span>🎈</span><span>🎉</span><span>🌽</span><span>🦃</span><span>🥧</span><span>🍂</span><span>✨</span>
-        </div>
+    <div class="invite-card tiltable" data-tilt-range="-1.5,1.5">
+        <div class="confetti-row" id="confettiRow" aria-hidden="true"></div>
+        <br>
         <div class="decoration">🍂 🦃 🥧</div>
         <h1>Friendsgiving</h1>
-        <h2>You're Invited!</h2>
+        <h2 class="tiltable" data-tilt-range="-4,6">You're Invited!</h2>
         
         <div class="divider"></div>
         
@@ -371,7 +374,7 @@
             <strong>Time:</strong> 5:00 PM - 11:00 PM</p>
 
             <div class="menu-section">
-                <span class="menu-title">On the Menu</span>
+                <span class="menu-title tiltable" data-tilt-range="-6,4">On the Menu</span>
                 <ul class="menu-items" id="menuList">
                     <!-- Items will be loaded here -->
                 </ul>
@@ -394,7 +397,7 @@
         <button onclick="downloadICS()" class="calendar-btn">Add to Calendar 📅</button>
         <br>
 
-        <div class="footer">
+    <div class="footer tiltable" data-tilt-range="-4,3">
             Please let us know if you have any dietary restrictions.
         </div>
     </div>
@@ -403,8 +406,99 @@
     let isEditMode = false;
     let currentMenu = [];
     let menuSource;
+    let confettiRefreshTimer;
+
+    const randomBetween = (a, b) => Math.random() * (b - a) + a;
+    const confettiEmojis = ['🎈','🎉','🌽','🦃','🥧','🍂','✨','🍁','🥂','🍷','🍇','🍊','🍓','🍯','🍞','🍎','🍐','🥕','🥜','🥗','🍹','🍺','🍪','🍫','🍭'];
+    const confettiContainer = document.getElementById('confettiRow');
+    const confettiSettings = {
+        count: 24,
+        minDuration: 2.6,
+        durationVariance: 2,
+        minSize: 0.6,
+        sizeVariance: 1.4,
+        minOpacity: 0.6,
+        opacityVariance: 0.35,
+        refreshInterval: 2500,
+    };
+
+    function applyRandomTilts() {
+        document.querySelectorAll('[data-tilt-range]').forEach(el => {
+            const range = (el.dataset.tiltRange || '').split(',').map(value => parseFloat(value.trim()));
+            if (range.length !== 2 || range.some(value => Number.isNaN(value))) {
+                return;
+            }
+            const [start, end] = range;
+            const min = Math.min(start, end);
+            const max = Math.max(start, end);
+            const tilt = randomBetween(min, max);
+            el.style.setProperty('--tilt', `${tilt}deg`);
+        });
+    }
+
+    function createConfettiPiece() {
+        const span = document.createElement('span');
+        styleConfettiPiece(span);
+        return span;
+    }
+
+    function styleConfettiPiece(span) {
+        const emoji = confettiEmojis[Math.floor(Math.random() * confettiEmojis.length)];
+        span.textContent = emoji;
+        span.style.display = 'inline-block';
+        span.style.animationName = 'fall';
+        span.style.animationTimingFunction = 'linear';
+        span.style.animationIterationCount = 'infinite';
+        span.style.animationDelay = `${randomBetween(0, 3.5).toFixed(2)}s`;
+        const duration = confettiSettings.minDuration + randomBetween(0, confettiSettings.durationVariance);
+        span.style.animationDuration = `${duration.toFixed(2)}s`;
+        const size = confettiSettings.minSize + randomBetween(0, confettiSettings.sizeVariance);
+        span.style.fontSize = `${size.toFixed(2)}em`;
+        const opacity = confettiSettings.minOpacity + randomBetween(0, confettiSettings.opacityVariance);
+        span.style.opacity = `${opacity.toFixed(2)}`;
+        const offset = randomBetween(-70, 70);
+        span.style.transform = `translateX(${offset.toFixed(1)}%)`;
+        span.style.margin = '0 2px';
+    }
+
+    function refreshConfettiBatch() {
+        if (!confettiContainer) {
+            return;
+        }
+        const { children } = confettiContainer;
+        if (!children.length) {
+            return;
+        }
+        const refreshCount = Math.max(1, Math.floor(children.length * 0.08));
+        for (let i = 0; i < refreshCount; i++) {
+            const idx = Math.floor(Math.random() * children.length);
+            const el = children[idx];
+            if (!el) {
+                continue;
+            }
+            styleConfettiPiece(el);
+        }
+    }
+
+    function generateConfetti(count = confettiSettings.count) {
+        if (!confettiContainer) {
+            return;
+        }
+        const fragment = document.createDocumentFragment();
+        for (let i = 0; i < count; i++) {
+            fragment.appendChild(createConfettiPiece());
+        }
+        confettiContainer.innerHTML = '';
+        confettiContainer.appendChild(fragment);
+        if (confettiRefreshTimer) {
+            clearInterval(confettiRefreshTimer);
+        }
+        confettiRefreshTimer = setInterval(refreshConfettiBatch, confettiSettings.refreshInterval);
+    }
 
     window.onload = function() {
+        applyRandomTilts();
+        generateConfetti();
         fetchMenu();
         subscribeMenuStream();
     };
@@ -550,6 +644,47 @@
             link.click();
             document.body.removeChild(link);
         }
+
+        (function generateConfetti(count = 20) {
+            const emojis = ['🎈','🎉','🌽','🦃','🥧','🍂','✨','🍁','🥂','🍷','🍇','🍊','🍓','🍯','🍞','🍎','🍐','🥕','🥜','🥗','🍹','🍺','🍪','🍫','🍭'];
+            const container = document.getElementById('confettiRow');
+            if (!container) return;
+            container.innerHTML = '';
+            for (let i = 0; i < count; i++) {
+            const span = document.createElement('span');
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+            span.textContent = emoji;
+            const delay = (Math.random() * 3.5).toFixed(2) + 's';
+            const duration = (2.6 + Math.random() * 2).toFixed(2) + 's';
+            const size = (0.5 + Math.random() * 1.4).toFixed(2) + 'em';
+            const opacity = (0.5 + Math.random() * 0.3).toFixed(2);
+            // horizontal offset so the row feels wide and scattered
+            const offset = (Math.random() * 140 - 70).toFixed(1) + '%';
+            span.style.display = 'inline-block';
+            span.style.animationName = 'fall';
+            span.style.animationTimingFunction = 'linear';
+            span.style.animationIterationCount = 'infinite';
+            span.style.animationDelay = delay;
+            span.style.animationDuration = duration;
+            span.style.fontSize = size;
+            span.style.opacity = opacity;
+            span.style.transform = `translateX(${offset})`;
+            span.style.margin = '0 2px';
+            container.appendChild(span);
+            }
+            // gently refresh a few random pieces over time to avoid perfectly synchronized loops
+            setInterval(() => {
+            const children = container.children;
+            for (let i = 0; i < Math.max(1, Math.floor(children.length * 0.06)); i++) {
+                const idx = Math.floor(Math.random() * children.length);
+                const el = children[idx];
+                if (!el) continue;
+                el.style.animationDelay = (Math.random() * 3.5).toFixed(2) + 's';
+                el.style.animationDuration = (2.6 + Math.random() * 2).toFixed(2) + 's';
+                el.style.opacity = (0.7 + Math.random() * 0.3).toFixed(2);
+            }
+            }, 2500);
+        })();
     </script>
 </body>
 </html>
