@@ -56,7 +56,7 @@ fi
 # -v ...: Mount the menu.json file so updates are saved locally
 # Set USE_HOST_NETWORK=1 to use --network host so 192.168.9.187 can reach the container (requires root)
 echo "Starting container..."
-NETWORK_ARGS="-p 0.0.0.0:8080:8080"
+NETWORK_ARGS="-p 0.0.0.0:8080:8000"
 if [[ "${USE_HOST_NETWORK:-0}" == "1" ]]; then
 	NETWORK_ARGS="--network host"
 	echo "Switching to host networking so 192.168.9.187:8080 can reach the server."

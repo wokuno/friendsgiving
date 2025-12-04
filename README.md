@@ -22,7 +22,7 @@ cd /Users/wokuno/Desktop/friendsgiving
 go run ./src/main.go
 ```
 
-The server listens on `http://localhost:8080`, serves static assets from `src/`, and exposes the API under `/api/menu`.
+The server listens on `http://localhost:8000`, serves static assets from `src/`, and exposes the API under `/api/menu`.
 
 ## API reference
 

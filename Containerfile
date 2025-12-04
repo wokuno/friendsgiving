@@ -25,7 +25,7 @@ COPY --from=builder /app/src/static ./static
 COPY --from=builder /app/src/data ./data
 
 # Expose the port
-EXPOSE 8080
+EXPOSE 8000
 
 # Run the application
 CMD ["./friendsgiving-server"]
