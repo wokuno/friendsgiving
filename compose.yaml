@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  friendsgiving:
+    build:
+      context: .
+      dockerfile: Containerfile
+    container_name: friendsgiving
+    restart: unless-stopped
+    volumes:
+      - ./menu.json:/app/menu.json
+    networks:
+      - friendsgiving_network
+    expose:
+      - "8080"
+
+  caddy:
+    image: docker.io/library/caddy:2-alpine
+    container_name: caddy
+    restart: unless-stopped
+    ports:
+      - "23.150.68.1:80:80"
+      - "23.150.68.1:443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - friendsgiving_network
+    depends_on:
+      - friendsgiving
+
+networks:
+  friendsgiving_network:
+    driver: bridge
+
+volumes:
+  caddy_data:
+  caddy_config:
