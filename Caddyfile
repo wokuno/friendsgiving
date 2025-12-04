@@ -10,8 +10,7 @@ wrangle.events {
         Referrer-Policy "strict-origin-when-cross-origin"
     }
 
-    # log {
-    #    output file /data/access.log
-    #    format json
-    # }
+    log {
+       output stdout
+    }
 }
