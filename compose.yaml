@@ -2,9 +2,7 @@ version: '3.8'
 
 services:
   friendsgiving:
-    build:
-      context: .
-      dockerfile: Containerfile
+    image: ghcr.io/wokuno/friendsgiving:latest
     container_name: friendsgiving
     restart: unless-stopped
     volumes:
