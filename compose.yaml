@@ -6,7 +6,7 @@ services:
     container_name: friendsgiving
     restart: unless-stopped
     volumes:
-      - ./menu.json:/app/menu.json:Z
+      - ./menu.json:/app/data/menu.json:Z
     networks:
       - friendsgiving_network
     expose:
