@@ -10,15 +10,15 @@ services:
     networks:
       - friendsgiving_network
     expose:
-      - "8000"
+      - "8080"
 
   caddy:
     image: docker.io/library/caddy:2-alpine
     container_name: caddy
     restart: unless-stopped
     ports:
-      - "216.66.77.167:8080:80"
-      - "216.66.77.167:8443:443"
+      - "216.66.77.167:80:80"
+      - "216.66.77.167:443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:Z
       - caddy_data:/data
