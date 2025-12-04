@@ -6,7 +6,7 @@ services:
     container_name: friendsgiving
     restart: unless-stopped
     volumes:
-      - ./menu.json:/app/menu.json
+      - ./menu.json:/app/menu.json:Z
     networks:
       - friendsgiving_network
     expose:
@@ -20,7 +20,7 @@ services:
       - "216.66.77.167:8080:80"
       - "216.66.77.167:8443:443"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./Caddyfile:/etc/caddy/Caddyfile:Z
       - caddy_data:/data
       - caddy_config:/config
     networks:
